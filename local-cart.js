@@ -2,31 +2,6 @@
   const WHATSAPP_NUMBER = '919528394331';
   const CART_KEY = 'alsaalim_cart';
 
-  /* ── Dynamically load Shiprocket deps ─────────────────────────────── */
-  var _srReady = false;
-  (function loadSR() {
-    var base = window.location.pathname.includes('/products/') ? '../' : './';
-    // Avoid double-loading if buy-now-modal.js already added these tags
-    function needsLoad(name) {
-      return !document.querySelector('script[src*="' + name + '"]');
-    }
-    function loadScript(src, cb) {
-      var s = document.createElement('script');
-      s.src = base + src;
-      s.onload = cb || function () {};
-      s.onerror = cb || function () {};
-      document.head.appendChild(s);
-    }
-    if (needsLoad('shiprocket-config')) {
-      loadScript('shiprocket-config.js', function () {
-        loadScript('shiprocket.js', function () { _srReady = true; });
-      });
-    } else {
-      // scripts already being loaded by buy-now-modal.js; wait a tick
-      setTimeout(function () { _srReady = !!window.ShiprocketAPI; }, 2000);
-    }
-  })();
-
   /* ── Cart Data Helpers ─────────────────────────────────────────────── */
   function getCart() {
     try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
@@ -148,14 +123,6 @@
     .lc-checkout-wa:hover { background: #1fb855; }
     .lc-checkout-wa svg { width: 20px; height: 20px; fill: #fff; }
 
-    /* "or" divider */
-    .lc-or {
-      text-align: center; font-size: 12px; color: #bbb;
-      margin: 10px 0; position: relative;
-    }
-    .lc-or::before, .lc-or::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: #eee; }
-    .lc-or::before { left: 0; } .lc-or::after { right: 0; }
-
     /* ── WhatsApp cart modal ── */
     .lc-wa-overlay {
       position: fixed; inset: 0;
@@ -217,96 +184,8 @@
     .lc-wa-submit:hover { background: #1fb855; }
     .lc-wa-submit svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
 
-    /* Shiprocket checkout */
-    .lc-checkout-sr {
-      width: 100%; padding: 14px;
-      background: #f47920; color: #fff;
-      border: none; border-radius: 8px;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer; display: flex;
-      align-items: center; justify-content: center; gap: 8px;
-      transition: background .2s;
-    }
-    .lc-checkout-sr:hover { background: #d9640f; }
-    .lc-checkout-sr svg { width: 20px; height: 20px; fill: #fff; }
-
     .lc-clear-btn { display: block; width: 100%; text-align: center; margin-top: 10px; background: none; border: 1.5px solid #ddd; padding: 12px; border-radius: 8px; font-size: 14px; cursor: pointer; color: #666; font-weight: 600; }
     .lc-clear-btn:hover { border-color: #d32f2f; color: #d32f2f; }
-
-    /* ── Shiprocket Cart Modal ── */
-    .lc-sr-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.55);
-      z-index: 200000;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; visibility: hidden;
-      transition: opacity .25s, visibility .25s;
-    }
-    .lc-sr-overlay.active { opacity: 1; visibility: visible; }
-    .lc-sr-modal {
-      background: #fff; border-radius: 14px;
-      width: 92%; max-width: 460px;
-      max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,.3);
-      animation: srSlideUp .3s ease;
-    }
-    @keyframes srSlideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
-    .lc-sr-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 22px 14px; border-bottom: 1px solid #eee;
-    }
-    .lc-sr-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: #1a1a1a; }
-    .lc-sr-close { background: none; border: none; font-size: 26px; cursor: pointer; color: #888; line-height: 1; padding: 0 4px; }
-    .lc-sr-close:hover { color: #333; }
-    .lc-sr-summary {
-      padding: 14px 22px; background: #f8f8f8; border-bottom: 1px solid #eee;
-      font-size: 13px; color: #555;
-    }
-    .lc-sr-summary strong { display: block; font-size: 15px; color: #1a1a1a; margin-bottom: 4px; }
-    .lc-sr-form { padding: 18px 22px 22px; }
-    .lc-sr-form label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 5px; }
-    .lc-sr-form input, .lc-sr-form textarea {
-      width: 100%; padding: 10px 12px;
-      border: 1.5px solid #ddd; border-radius: 8px;
-      font-size: 14px; margin-bottom: 14px;
-      font-family: inherit; transition: border-color .2s;
-      box-sizing: border-box;
-    }
-    .lc-sr-form input:focus, .lc-sr-form textarea:focus { outline: none; border-color: #f47920; }
-    .lc-sr-form textarea { resize: vertical; min-height: 60px; }
-    .lc-sr-form .lc-sr-err { color: #d32f2f; font-size: 12px; margin: -10px 0 10px; display: none; }
-    .lc-sr-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .lc-sr-row-2 > div { display: flex; flex-direction: column; }
-    .lc-sr-row-2 input { margin-bottom: 0; }
-    .lc-sr-row-2 .lc-sr-err { margin-top: 4px; margin-bottom: 0; }
-    .lc-sr-submit {
-      width: 100%; padding: 14px;
-      background: #f47920; color: #fff;
-      border: none; border-radius: 8px;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer; display: flex;
-      align-items: center; justify-content: center; gap: 8px;
-      transition: background .2s;
-    }
-    .lc-sr-submit:hover:not(:disabled) { background: #d9640f; }
-    .lc-sr-submit:disabled { background: #f4a06b; cursor: not-allowed; }
-    .lc-sr-submit svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
-    .lc-sr-modal-success {
-      background: #e8f5e9; border: 1px solid #a5d6a7;
-      border-radius: 8px; padding: 14px 16px;
-      font-size: 13px; color: #2e7d32; margin-top: 12px;
-      display: none; line-height: 1.5;
-    }
-    .lc-sr-modal-success strong { display: block; margin-bottom: 4px; font-size: 14px; }
-    .lc-sr-modal-error {
-      background: #fdecea; border: 1px solid #f5c6c6;
-      border-radius: 8px; padding: 12px 14px;
-      font-size: 13px; color: #c62828; margin-top: 10px;
-      display: none; line-height: 1.5;
-    }
   `;
   document.head.appendChild(style);
 
@@ -434,8 +313,6 @@
   }
 
   const WA_SVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.96 7.96 0 0 1-4.107-1.138l-.293-.176-2.867.852.852-2.867-.176-.293A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg>`;
-
-  const SR_SVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zm-.5 1.5L21.46 12H17V9.5h2.5zM6 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2.22-3c-.55-.61-1.35-1-2.22-1s-1.67.39-2.22 1H3V6h12v9H8.22zM18 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>`;
 
   /* ── WhatsApp cart modal ─────────────────────────────────────────────── */
   let _waModalEl = null;
@@ -570,168 +447,6 @@
     overlay.classList.remove('active');
   }
 
-  /* ── Shiprocket cart modal ────────────────────────────────────────────── */
-  let _srModalEl = null;
-
-  function getSRModal() {
-    if (_srModalEl) return _srModalEl;
-
-    const overlay = document.createElement('div');
-    overlay.className = 'lc-sr-overlay';
-    overlay.innerHTML = `
-      <div class="lc-sr-modal">
-        <div class="lc-sr-header">
-          <h3>Ship via Shiprocket</h3>
-          <button class="lc-sr-close" aria-label="Close">&times;</button>
-        </div>
-        <div class="lc-sr-summary">
-          <strong id="lc-sr-items-label"></strong>
-          <span id="lc-sr-total-label"></span>
-        </div>
-        <form class="lc-sr-form" novalidate>
-          <label for="lc-sr-name">Full Name *</label>
-          <input type="text"  id="lc-sr-name"    placeholder="Enter your full name"           autocomplete="name" required>
-          <div class="lc-sr-err" id="lc-sr-name-err">Please enter your name</div>
-
-          <label for="lc-sr-phone">Phone Number *</label>
-          <input type="tel"   id="lc-sr-phone"   placeholder="10-digit mobile number"         autocomplete="tel" required>
-          <div class="lc-sr-err" id="lc-sr-phone-err">Please enter a valid phone number</div>
-
-          <label for="lc-sr-email">Email *</label>
-          <input type="email" id="lc-sr-email"   placeholder="your@email.com"                 autocomplete="email" required>
-          <div class="lc-sr-err" id="lc-sr-email-err">Please enter a valid email address</div>
-
-          <label for="lc-sr-address">Delivery Address *</label>
-          <textarea           id="lc-sr-address" placeholder="House no., Street, Area"        autocomplete="street-address" required></textarea>
-          <div class="lc-sr-err" id="lc-sr-address-err">Please enter your delivery address</div>
-
-          <div class="lc-sr-row-2">
-            <div>
-              <label for="lc-sr-city">City *</label>
-              <input type="text" id="lc-sr-city"  placeholder="e.g. Lucknow" autocomplete="address-level2" required>
-              <div class="lc-sr-err" id="lc-sr-city-err">Required</div>
-            </div>
-            <div>
-              <label for="lc-sr-state">State *</label>
-              <input type="text" id="lc-sr-state" placeholder="e.g. Uttar Pradesh" autocomplete="address-level1" required>
-              <div class="lc-sr-err" id="lc-sr-state-err">Required</div>
-            </div>
-          </div>
-          <div style="margin-bottom:14px"></div>
-
-          <label for="lc-sr-pincode">Pincode *</label>
-          <input type="text"  id="lc-sr-pincode"  placeholder="6-digit pincode" inputmode="numeric" required>
-          <div class="lc-sr-err" id="lc-sr-pincode-err">Please enter a valid 6-digit pincode</div>
-
-          <button type="submit" class="lc-sr-submit" id="lc-sr-submit-btn">
-            ${SR_SVG}
-            Confirm &amp; Place Order
-          </button>
-
-          <div class="lc-sr-modal-success" id="lc-sr-modal-success">
-            <strong>&#10003; Order placed successfully!</strong>
-            Your order has been created on Shiprocket. Our team will ship it shortly.
-          </div>
-          <div class="lc-sr-modal-error" id="lc-sr-modal-error"></div>
-        </form>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-
-    overlay.querySelector('.lc-sr-close').addEventListener('click', () => overlay.classList.remove('active'));
-    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.classList.remove('active'); });
-
-    overlay.querySelector('.lc-sr-form').addEventListener('submit', async e => {
-      e.preventDefault();
-      await submitSRCartOrder(overlay);
-    });
-
-    _srModalEl = overlay;
-    return overlay;
-  }
-
-  function openSRModal(cart, total) {
-    const overlay = getSRModal();
-    const itemCount = cart.reduce((s, i) => s + i.qty, 0);
-    overlay.querySelector('#lc-sr-items-label').textContent =
-      itemCount + ' item' + (itemCount > 1 ? 's' : '') + ' in your cart';
-    overlay.querySelector('#lc-sr-total-label').textContent =
-      'Total: Rs. ' + total.toFixed(2);
-    overlay.querySelectorAll('.lc-sr-err').forEach(el => el.style.display = 'none');
-    overlay.querySelector('#lc-sr-modal-success').style.display = 'none';
-    overlay.querySelector('#lc-sr-modal-error').style.display = 'none';
-    const btn = overlay.querySelector('#lc-sr-submit-btn');
-    btn.disabled = false;
-    btn.innerHTML = SR_SVG + ' Confirm &amp; Place Order';
-    overlay.classList.add('active');
-  }
-
-  async function submitSRCartOrder(overlay) {
-    const f = id => overlay.querySelector('#' + id);
-    const name    = f('lc-sr-name').value.trim();
-    const phone   = f('lc-sr-phone').value.trim();
-    const email   = f('lc-sr-email').value.trim();
-    const address = f('lc-sr-address').value.trim();
-    const city    = f('lc-sr-city').value.trim();
-    const state   = f('lc-sr-state').value.trim();
-    const pincode = f('lc-sr-pincode').value.trim();
-
-    let valid = true;
-    function showErr(id, show) {
-      f(id).style.display = show ? 'block' : 'none';
-      if (show) valid = false;
-    }
-    showErr('lc-sr-name-err',    !name);
-    showErr('lc-sr-phone-err',   !phone || phone.replace(/\D/g, '').length < 10);
-    showErr('lc-sr-email-err',   !email || !email.includes('@'));
-    showErr('lc-sr-address-err', !address);
-    showErr('lc-sr-city-err',    !city);
-    showErr('lc-sr-state-err',   !state);
-    showErr('lc-sr-pincode-err', !pincode || pincode.replace(/\D/g, '').length < 6);
-    if (!valid) return;
-
-    const successBox = f('lc-sr-modal-success');
-    const errorBox   = f('lc-sr-modal-error');
-    const btn        = f('lc-sr-submit-btn');
-
-    successBox.style.display = 'none';
-    errorBox.style.display   = 'none';
-
-    if (!_srReady || !window.ShiprocketAPI) {
-      errorBox.textContent = 'Shiprocket is still loading — please try again in a moment.';
-      errorBox.style.display = 'block';
-      return;
-    }
-
-    btn.disabled    = true;
-    btn.textContent = 'Placing order…';
-
-    const cart = getCart();
-    const customer = { name, phone, email, address, city, state, pincode };
-    const items = cart.map(item => ({
-      name:  item.name,
-      price: item.priceNum || item.price,
-      qty:   getItemQty(item)
-    }));
-
-    try {
-      await window.ShiprocketAPI.placeOrder(customer, items);
-      successBox.style.display = 'block';
-      btn.textContent = '✓ Order Placed';
-      clearCart();
-      setTimeout(() => {
-        overlay.classList.remove('active');
-        renderCartPage();
-      }, 3000);
-    } catch (err) {
-      errorBox.innerHTML = '<strong>Error:</strong> ' + (err.message || 'Unknown error. Please try again.');
-      errorBox.style.display = 'block';
-      btn.disabled  = false;
-      btn.innerHTML = SR_SVG + ' Confirm &amp; Place Order';
-    }
-  }
-
   /* ── Render cart page ───────────────────────────────────────────────── */
   function renderCartPage() {
     if (!isCartPage()) return;
@@ -794,11 +509,6 @@
             ${WA_SVG}
             Checkout via WhatsApp
           </button>
-          <div class="lc-or">or</div>
-          <button class="lc-checkout-sr" id="lc-checkout-sr-btn">
-            ${SR_SVG}
-            Checkout via Shiprocket
-          </button>
           <button class="lc-clear-btn" id="lc-clear-cart">Clear cart</button>
         </div>
       </div>`;
@@ -816,8 +526,6 @@
     document.getElementById('lc-clear-cart').addEventListener('click', () => { clearCart(); renderCartPage(); });
 
     document.getElementById('lc-checkout-wa-btn').addEventListener('click', () => openWAModal(getCart(), total));
-
-    document.getElementById('lc-checkout-sr-btn').addEventListener('click', () => openSRModal(getCart(), total));
   }
 
   /* ── Migrate old cart data ──────────────────────────────────────────── */
