@@ -1,0 +1,337 @@
+<!doctype html>
+<html class="js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Search – AL-SAALIM PERFUMES</title>
+  <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+
+  <!-- Same CSS as rest of site -->
+  <link rel="stylesheet" href="cdn/shop/t/5/assets/base.css_v_60699539023827049011770188159.css">
+  <link rel="stylesheet" href="cdn/shop/t/5/assets/component-list-menu.css_v_151968516119678728991770188159.css">
+  <link rel="stylesheet" href="cdn/shop/t/5/assets/component-search.css_v_165164710990765432851770188159.css">
+  <link rel="stylesheet" href="cdn/shop/t/5/assets/section-header.css_v_24059258437225960621770188159.css">
+  <link rel="stylesheet" href="cdn/shop/t/5/assets/component-card.css_v_14696875779523183531770188159.css">
+  <link rel="stylesheet" href="cdn/shop/t/5/assets/component-price.css_v_154791058574665869891770188159.css">
+  <link rel="stylesheet" href="cdn/shop/t/5/assets/component-product-grid.css_v_134082404547063218321770188159.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body { margin: 0; font-family: "Quattrocento Sans", sans-serif; background: #fff; color: #1a1a1a; }
+
+    /* ── Minimal header ── */
+    .sr-header {
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .sr-header-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px; gap: 16px;
+    }
+    .sr-logo {
+      font-size: 18px; font-weight: 700; color: #1a1a1a;
+      text-decoration: none; letter-spacing: .5px; white-space: nowrap;
+    }
+    .sr-nav { display: flex; gap: 20px; }
+    .sr-nav a { color: #555; text-decoration: none; font-size: 14px; font-weight: 500; }
+    .sr-nav a:hover { color: #1a1a1a; }
+    .sr-cart-icon { display: flex; align-items: center; }
+    .sr-cart-icon a { color: #1a1a1a; text-decoration: none; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+    /* ── Search bar ── */
+    .sr-search-section {
+      background: #f8f8f8;
+      border-bottom: 1px solid #eee;
+      padding: 24px 20px;
+    }
+    .sr-search-section-inner { max-width: 640px; margin: 0 auto; }
+    .sr-search-bar {
+      display: flex; align-items: center;
+      background: #fff; border: 2px solid #1a1a1a; border-radius: 8px;
+      overflow: hidden;
+    }
+    .sr-search-bar input {
+      flex: 1; padding: 12px 16px; font-size: 16px;
+      border: none; outline: none; font-family: inherit; color: #1a1a1a;
+    }
+    .sr-search-bar button {
+      background: #1a1a1a; color: #fff; border: none;
+      padding: 12px 20px; cursor: pointer; display: flex; align-items: center;
+      transition: background .2s;
+    }
+    .sr-search-bar button:hover { background: #333; }
+    .sr-search-bar button svg { width: 18px; height: 18px; fill: #fff; }
+
+    /* ── Results area ── */
+    .sr-results-section { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+
+    .sr-results-header {
+      margin-bottom: 20px;
+      display: flex; align-items: baseline; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .sr-results-header h1 { font-size: 22px; font-weight: 700; margin: 0; }
+    .sr-count { font-size: 14px; color: #777; }
+
+    /* ── Product grid ── */
+    .sr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .sr-card {
+      border: 1px solid #e8e8e8; border-radius: 10px;
+      overflow: hidden; text-decoration: none; color: inherit;
+      transition: box-shadow .2s, transform .2s;
+      display: block;
+    }
+    .sr-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.1); transform: translateY(-2px); }
+    .sr-card-img {
+      aspect-ratio: 1; overflow: hidden; background: #f5f5f5;
+    }
+    .sr-card-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .3s;
+    }
+    .sr-card:hover .sr-card-img img { transform: scale(1.04); }
+    .sr-card-body { padding: 12px 14px 16px; }
+    .sr-card-title {
+      font-size: 13px; font-weight: 600; color: #1a1a1a;
+      margin: 0 0 6px; line-height: 1.4;
+      overflow: hidden; display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .sr-card-price { font-size: 14px; font-weight: 700; color: #2e7d32; margin: 0; }
+
+    /* ── States ── */
+    .sr-empty {
+      text-align: center; padding: 60px 20px;
+      color: #888;
+    }
+    .sr-empty svg { width: 48px; height: 48px; fill: #ccc; margin-bottom: 16px; }
+    .sr-empty h2 { font-size: 18px; font-weight: 600; color: #444; margin: 0 0 8px; }
+    .sr-empty p { font-size: 14px; margin: 0 0 20px; }
+    .sr-empty a {
+      display: inline-block; padding: 12px 28px;
+      background: #1a1a1a; color: #fff; text-decoration: none;
+      border-radius: 6px; font-weight: 600; font-size: 14px;
+    }
+
+    .sr-prompt {
+      text-align: center; padding: 60px 20px; color: #aaa;
+      font-size: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .sr-nav { display: none; }
+      .sr-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .sr-card-title { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="sr-header">
+    <div class="sr-header-inner">
+      <a class="sr-logo" href="index.html">AL-SAALIM PERFUMES</a>
+      <nav class="sr-nav">
+        <a href="index.html">Home</a>
+        <a href="collections/all.html">Catalog</a>
+        <a href="pages/contact.html">Contact</a>
+      </nav>
+      <div class="sr-cart-icon">
+        <a href="cart.html">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill="currentColor" d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cart
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search bar -->
+  <div class="sr-search-section">
+    <div class="sr-search-section-inner">
+      <form class="sr-search-bar" id="search-form" role="search">
+        <input
+          type="search"
+          id="search-input"
+          name="q"
+          placeholder="Search for perfumes, attars…"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        >
+        <button type="submit" aria-label="Search">
+          <svg viewBox="0 0 18 19" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M11.03 11.68A5.784 5.784 0 1 1 2.85 3.5a5.784 5.784 0 0 1 8.18 8.18m.26 1.12a6.78 6.78 0 1 1 .72-.7l5.4 5.4a.5.5 0 1 1-.71.7z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="sr-results-section">
+    <div id="results-header" class="sr-results-header" style="display:none">
+      <h1 id="results-title"></h1>
+      <span class="sr-count" id="results-count"></span>
+    </div>
+    <div id="results-grid" class="sr-grid"></div>
+    <div id="results-empty" class="sr-empty" style="display:none">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"/></svg>
+      <h2>No results found</h2>
+      <p id="empty-msg">Try a different keyword.</p>
+      <a href="collections/all.html">Browse all products</a>
+    </div>
+    <div id="results-prompt" class="sr-prompt">
+      Start typing to search our collection…
+    </div>
+  </div>
+
+  <script src="local-cart.js?v2" defer></script>
+
+  <script>
+    const PRODUCTS = [
+      {file:'products/al-saalim-premium-attar-combo-pack-pack-of-3-aseel-white-musk-signature-roll-on-6ml-each-alcohol-free.html',title:'Al-Saalim Premium Attar Combo Pack (Pack of 3 – Aseel, White Musk & Signature)',price:'Rs. 479.00 INR',img:'cdn/shop/files/BFB62201-2C2C-452A-9A17-C5DA96A81EEA.png_v_1777870797'},
+      {file:'products/al-saalim-premium-attar-combo-pack-pack-of-3-roll-on-6ml-alcohol-free-luxury-fragrance-set.html',title:'Al-Saalim Premium Attar Combo Pack (Pack of 3 Roll On 6ml) | Alcohol Free Luxury Fragrance Set',price:'Rs. 479.00 INR',img:'cdn/shop/files/AC258B55-E177-4A56-8B21-5EFD535A6F9F.png_v_1777872835'},
+      {file:'products/al-saalim-premium-attar-combo-pack-pack-of-3-shanaya-sadaf-ameerul-oud-roll-on-6ml-each-alcohol-free.html',title:'Al-Saalim Premium Attar Combo Pack (Pack of 3 – Shanaya, Sadaf & Ameerul Oud)',price:'Rs. 479.00 INR',img:'cdn/shop/files/328DF199-D236-4CC0-A622-27241852D970.png_v_1777873058'},
+      {file:'products/al-saalim-premium-attar-oil-8000-per-kg-pure-concentrated-fragrance-oil-alcohol-free.html',title:'Al-Saalim Premium Attar Oil (₹8000 per Kg) | Pure Concentrated Fragrance Oil',price:'Rs. 7,999.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_577e804a-0c7b-4857-a9f3-10f7dbab0bf5.png_v_1770302990'},
+      {file:'products/ameerul-oud-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'Ameerul Oud Attar (Roll-On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/1FC990E2-B88B-47F2-8AB8-D82E2817ABB7.png_v_1777870289'},
+      {file:'products/aseel-attar-100gm-premium-concentrated-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Aseel Attar – 100gm Premium Concentrated Fragrance Oil',price:'Rs. 610.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_ab43bd22-444a-4c92-a672-d386bc6465aa.jpg_v_1771720293'},
+      {file:'products/aseel-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'Aseel Attar (Roll On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/57B817DC-B18E-4CFD-9CB9-1CD98B192A51.png_v_1777870290'},
+      {file:'products/cr7-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'CR7 Attar (Roll-On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/97B70408-4111-45F3-98A8-1D3734864D28.png_v_1777870290'},
+      {file:'products/cr7-velocity-perfume-50ml-strong-fresh-long-lasting-fragrance.html',title:'CR7 Velocity Perfume 50ml | Strong & Fresh Long Lasting Fragrance',price:'Rs. 449.00 INR',img:'cdn/shop/files/B1930CF6-437E-414C-BCA2-DCF27C35EDBA.png_v_1777870289'},
+      {file:'products/flora-bliss-perfume-50ml-soft-floral-long-lasting-fragrance.html',title:'Flora Bliss Perfume 50ml | Soft Floral Long Lasting Fragrance',price:'Rs. 449.00 INR',img:'cdn/shop/files/2971C4B0-F490-4FFF-B2E5-B7E1D449E436.png_v_1777870289'},
+      {file:'products/green-ajmeri-attar-100gm-premium-concentrated-fragrance-oil-al-saalim-perfumers-alcohol-free-1.html',title:'Ameerul Oud Attar – 100gm Premium Concentrated Oud Fragrance Oil',price:'Rs. 670.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_418c2e9e-af02-4500-ad01-964b422e14a7.jpg_v_1771720462'},
+      {file:'products/green-ajmeri-attar-100gm-premium-concentrated-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Green Ajmeri Attar – 100gm Premium Concentrated Fragrance Oil',price:'Rs. 730.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_1dd5704c-8333-4869-b707-02626d4fa557.jpg_v_1771720185'},
+      {file:'products/green-ajmeri-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'Green Ajmeri Attar (Roll-On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/B6AE23D4-9323-41D9-9238-F641430A564A.png_v_1777870289'},
+      {file:'products/gule-laila-attar-100gm-premium-concentrated-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Gule Laila Attar – 100gm Premium Concentrated Fragrance Oil',price:'Rs. 599.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_ddcd8cf7-6550-470a-a882-a14cf6ca8326.png_v_1770302765'},
+      {file:'products/gule-laila-attar-100gm-premium-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Gule Laila Attar – 100gm Premium Fragrance Oil',price:'Rs. 600.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_f81a9608-9099-44c8-88c9-e80d47b14d84.jpg_v_1771719789'},
+      {file:'products/jannatul-firdaus-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'Jannatul Firdaus Attar (Roll-On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/EF7A7235-2455-4791-B63B-97F4B20B7F3F.png_v_1777870289'},
+      {file:'products/majmua-attar-100gm-premium-traditional-blend-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Majmua Attar – 100gm Premium Traditional Blend Fragrance Oil',price:'Rs. 659.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_caa2e224-b3a7-4788-b829-6d80073eec11.jpg_v_1771721294'},
+      {file:'products/mukhallat-saalim-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'Mukhallat Saalim Attar (Roll On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/5A8AE2AD-1122-407E-964E-A9F99F57A8FC.png_v_1777870289'},
+      {file:'products/mushk-rijali-attar-100gm-premium-concentrated-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Mushk Rijali Attar – 100gm Premium Concentrated Fragrance Oil',price:'Rs. 730.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_69f97175-96a0-4c69-8fae-9760264841b3.jpg_v_1771720035'},
+      {file:'products/mushk-rijali-attar-100gm-premium-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Mushk Rijali Attar – 100gm Premium Fragrance Oil',price:'Rs. 899.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_85a86b85-b21e-46df-be20-0d8b863fa952.png_v_1770302887'},
+      {file:'products/mushk-rosi-attar-100gm-premium-floral-musk-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Mushk Rosi Attar – 100gm Premium Floral Musk Fragrance Oil',price:'Rs. 520.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_785bb287-9979-49fc-af28-f3b5f99ae690.jpg_v_1771720624'},
+      {file:'products/musk-aura-eau-de-parfum-50ml-long-lasting-premium-fragrance.html',title:'Musk Aura Eau De Parfum 50ml | Long Lasting Premium Fragrance',price:'Rs. 449.00 INR',img:'cdn/shop/files/61019A00-CE76-43FC-A344-7E3A2B4EC0AD.png_v_1777870289'},
+      {file:'products/oud-qasmi-attar-100gm-premium-rich-woody-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Oud Qasmi Attar – 100gm Premium Rich & Woody Fragrance Oil',price:'Rs. 659.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_cf1b6d55-60ac-44af-bdc0-5a3336fbd7ee.jpg_v_1771721168'},
+      {file:'products/royal-rose-wood-perfume-50ml-deep-rich-long-lasting-fragrance.html',title:'Royal Rose Wood Perfume 50ml | Deep & Rich Long Lasting Fragrance',price:'Rs. 449.00 INR',img:'cdn/shop/files/84DAB2D7-6B15-4608-8186-E5D89A4FEADD.png_v_1777870290'},
+      {file:'products/royal-signature-eau-de-parfum-50ml-luxury-long-lasting-perfume.html',title:'Royal Signature Eau De Parfum 50ml | Luxury Long Lasting Perfume',price:'Rs. 449.00 INR',img:'cdn/shop/files/06B53E55-7D44-4B47-90CE-7A4020E01FA4.png_v_1777870289'},
+      {file:'products/sadaf-attar-100gm-premium-long-lasting-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Sadaf Attar – 100gm Premium Long-Lasting Fragrance Oil',price:'Rs. 499.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_00659690-bed7-48e3-89dc-756960e55921.jpg_v_1771720725'},
+      {file:'products/sadaf-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'Sadaf Attar (Roll On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/CA5E3F72-5228-4809-9296-A4247510D771.png_v_1777870289'},
+      {file:'products/sadaf-pears-perfume-50ml-fresh-fruity-long-lasting-fragrance.html',title:'Sadaf Pears Perfume 50ml | Fresh Fruity Long Lasting Fragrance',price:'Rs. 449.00 INR',img:'cdn/shop/files/61B48B34-2165-4A93-A1B8-0958962BE985.png_v_1777870289'},
+      {file:'products/shanaya-attar-100gm-premium-long-lasting-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'Shanaya Attar – 100gm Premium Long-Lasting Fragrance Oil',price:'Rs. 620.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_1501204e-22e9-4955-91ce-a884b6a89720.jpg_v_1771720820'},
+      {file:'products/shanaya-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'Shanaya Attar (Roll On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/DBA449C5-395D-41C6-91CE-FD450F9FA907.png_v_1777870289'},
+      {file:'products/signature-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'Signature Attar (Roll-On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/BCFF6EDA-FDA1-42E9-8A74-1503F4FE9A67.png_v_1777870290'},
+      {file:'products/white-musk-attar-100gm-premium-soft-clean-fragrance-oil-al-saalim-perfumers-alcohol-free.html',title:'White Musk Attar – 100gm Premium Soft & Clean Fragrance Oil',price:'Rs. 659.00 INR',img:'cdn/shop/files/rn-image_picker_lib_temp_0d5dc2db-db05-474e-9de2-69b815155fff.jpg_v_1771720904'},
+      {file:'products/white-musk-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'White Musk Attar (Roll-On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/7008594B-9D38-45B6-8453-FD87AC4A6428.png_v_1777869913'},
+      {file:'products/white-oudh-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free.html',title:'White Oudh Attar (Roll On 6ml) | Al-Saalim Perfumers',price:'Rs. 179.00 INR',img:'cdn/shop/files/79AA7FEA-C125-420B-91F0-3D0683DBE3F3.png_v_1777870289'},
+    ];
+
+    const input     = document.getElementById('search-input');
+    const form      = document.getElementById('search-form');
+    const grid      = document.getElementById('results-grid');
+    const header    = document.getElementById('results-header');
+    const titleEl   = document.getElementById('results-title');
+    const countEl   = document.getElementById('results-count');
+    const emptyEl   = document.getElementById('results-empty');
+    const emptyMsg  = document.getElementById('empty-msg');
+    const promptEl  = document.getElementById('results-prompt');
+
+    function renderResults(query) {
+      const q = query.trim().toLowerCase();
+
+      if (!q) {
+        header.style.display  = 'none';
+        emptyEl.style.display = 'none';
+        promptEl.style.display = 'block';
+        grid.innerHTML = '';
+        return;
+      }
+
+      // Score each product: title match gets highest weight, filename match also counts
+      const words = q.split(/\s+/).filter(Boolean);
+      const scored = PRODUCTS.map(p => {
+        const haystack = (p.title + ' ' + p.file).toLowerCase();
+        const score = words.filter(w => haystack.includes(w)).length;
+        return { ...p, score };
+      }).filter(p => p.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+      promptEl.style.display = 'none';
+      header.style.display   = 'flex';
+      titleEl.textContent    = `Search results for "${query.trim()}"`;
+      countEl.textContent    = scored.length
+        ? scored.length + ' product' + (scored.length > 1 ? 's' : '')
+        : '';
+
+      if (scored.length === 0) {
+        grid.innerHTML = '';
+        emptyEl.style.display = 'block';
+        emptyMsg.textContent  = `No products found for "${query.trim()}".`;
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+      grid.innerHTML = scored.map(p => `
+        <a class="sr-card" href="${p.file}">
+          <div class="sr-card-img">
+            <img src="${p.img}" alt="${p.title}" loading="lazy"
+                 onerror="this.style.display='none'">
+          </div>
+          <div class="sr-card-body">
+            <p class="sr-card-title">${p.title.split(' | ')[0]}</p>
+            <p class="sr-card-price">${p.price}</p>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    // Read ?q= from URL on page load
+    function getQuery() {
+      return new URLSearchParams(window.location.search).get('q') || '';
+    }
+
+    function init() {
+      const q = getQuery();
+      input.value = q;
+      renderResults(q);
+      document.title = q
+        ? `Search: ${q} – AL-SAALIM PERFUMES`
+        : 'Search – AL-SAALIM PERFUMES';
+    }
+
+    // Live search as user types
+    let debounceTimer;
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        const q = input.value;
+        const url = new URL(window.location);
+        if (q.trim()) { url.searchParams.set('q', q); }
+        else { url.searchParams.delete('q'); }
+        history.replaceState(null, '', url);
+        document.title = q.trim()
+          ? `Search: ${q.trim()} – AL-SAALIM PERFUMES`
+          : 'Search – AL-SAALIM PERFUMES';
+        renderResults(q);
+      }, 200);
+    });
+
+    // Prevent page reload on form submit (we handle it live)
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      renderResults(input.value);
+    });
+
+    init();
+  </script>
+</body>
+</html>
