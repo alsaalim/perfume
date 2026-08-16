@@ -54,6 +54,7 @@ TPL_SLUG      = 'shanaya-attar-roll-on-6ml-al-saalim-perfumers-alcohol-free'
 TPL_TITLE     = 'Shanaya Attar (Roll On 6ml) | Al-Saalim Perfumers | Alcohol Free'
 TPL_SHORT_TITLE = 'Shanaya Attar (Roll On 6ml)'
 TPL_IMG_BASE  = 'DBA449C5-395D-41C6-91CE-FD450F9FA907.png_v_1777870289'
+TPL_IMG2_BASE = 'F6839981-BE23-422C-BB75-3A7AC5AFB678.png_v_1778006239'   # secondary template image
 TPL_SALE_AMT  = '179.00'
 TPL_ORIG_AMT  = '599.00'
 
@@ -166,24 +167,52 @@ def make_product_html(slug, title, short_title, sale_price, orig_price,
     html = html.replace(TPL_TITLE, title)
     html = html.replace(TPL_SHORT_TITLE, short_title)
 
-    # ── 3. Replace image filename ─────────────────────────────────────────
+    # ── 3. Replace image filename(s) ─────────────────────────────────────
+    # Replace the primary template image UUID with our new image
     html = html.replace(TPL_IMG_BASE, main_img_base)
 
-    # ── 4. Replace prices ─────────────────────────────────────────────────
-    # Sale price
+    # The secondary template image (if any) → same new image (single-image product)
+    html = html.replace(TPL_IMG2_BASE, main_img_base)
+
+    # After UUID substitution, the src/srcset still reference _width_NNN and
+    # _v_NNNN variants that don't exist for our locally-copied file.
+    # Strip those suffixes so every reference resolves to the one file we have.
+    esc = re.escape(main_img_base)
+    # Fix src="...UUID_v_extra_width_NNN" → src="...UUID"
     html = re.sub(
-        r'(class="price-item price-item--sale[^"]*"[^>]*>)\s*' + re.escape(TPL_SALE_AMT),
+        r'(src="../cdn/shop/files/)' + esc + r'(?:_v_\d+)*(?:_width_\d+)?(")',
+        r'\g<1>' + main_img_base + r'\2',
+        html,
+    )
+    # Collapse srcset to just our one file (no width variants to offer)
+    html = re.sub(
+        r'(srcset=")[^"]*' + esc + r'[^"]*(")',
+        r'\g<1>' + f'../cdn/shop/files/{main_img_base}' + r'\2',
+        html,
+    )
+
+    # ── 4. Replace prices ─────────────────────────────────────────────────
+    # Sale price spans (class contains price-item--sale)
+    html = re.sub(
+        r'(class="price-item price-item--sale[^"]*"[^>]*>)\s*Rs\.\s*' + re.escape(TPL_SALE_AMT) + r'\s*INR',
         lambda m: m.group(1) + f'\n          Rs. {sale_price} INR\n        ',
         html
     )
-    # Regular/original price (strikethrough)
+    # "price__regular" span — shows sale price when on sale (class=price-item--regular, not inside <s>)
     html = re.sub(
-        r'(class="price-item price-item--regular[^"]*"[^>]*>)\s*' + re.escape(TPL_ORIG_AMT),
-        lambda m: m.group(1) + f'\n              \n                Rs. {orig_price} INR\n              \n            ',
+        r'(class="price-item price-item--regular"[^>]*>)\s*Rs\.\s*' + re.escape(TPL_SALE_AMT) + r'\s*INR',
+        lambda m: m.group(1) + f'\n            Rs. {sale_price} INR\n          ',
         html
     )
-    # og:price
-    html = re.sub(r'content="179\.00"', f'content="{sale_price}"', html)
+    # Compare-at / strikethrough price (inside <s class="price-item price-item--regular">)
+    html = re.sub(
+        r'(class="price-item price-item--regular[^"]*"[^>]*>)\s*(?:\s*)\s*Rs\.\s*' + re.escape(TPL_ORIG_AMT) + r'\s*INR',
+        lambda m: m.group(1) + f'\n                Rs. {orig_price} INR\n              ',
+        html
+    )
+    # og:price meta tag and JSON-LD price field
+    html = re.sub(r'content="' + re.escape(TPL_SALE_AMT) + r'"', f'content="{sale_price}"', html)
+    html = re.sub(r'"price":"' + re.escape(TPL_SALE_AMT) + r'"', f'"price":"{sale_price}"', html)
 
     # ── 5. Replace description ────────────────────────────────────────────
     html = re.sub(
