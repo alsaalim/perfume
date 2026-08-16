@@ -326,34 +326,139 @@ def make_collection_card(slug, title, short_title, sale_price, orig_price,
 
 
 def update_collections(slug, title, short_title, sale_price, orig_price, img_filename):
-    """Insert a new product card at the end of the product grid in collections/all.html."""
+    """Insert a new product card at the FIRST position in the product grid in collections/all.html."""
     with open(COLLECTIONS, encoding='utf-8') as f:
         html = f.read()
 
-    # Find the last product card and insert after it
-    last_card_pos = html.rfind('<div class="card-wrapper product-card-wrapper')
-    if last_card_pos == -1:
+    first_card = '<div class="card-wrapper product-card-wrapper'
+    first_pos = html.find(first_card)
+    if first_pos == -1:
         warn('Could not find product grid in collections/all.html — skipping.')
         return False
 
-    # Count existing cards for animation order
-    existing = len(re.findall(r'<div class="card-wrapper product-card-wrapper', html))
-    order = (existing % 4) + 1
-
     new_card = make_collection_card(slug, title, short_title,
-                                     sale_price, orig_price, img_filename, order)
+                                     sale_price, orig_price, img_filename, 1)
 
-    # Insert before the last closing </ul> or </div> of the product grid
-    # Strategy: insert after the last card-wrapper block
-    # Find end of the last card (before next structural element)
-    insert_pos = html.rfind('</div>\n  <div\n    class="grid__item scroll-trigger')
-    if insert_pos == -1:
-        # Fallback: just before </main>
-        insert_pos = html.rfind('</main>')
-
-    html = html[:insert_pos] + '\n\n' + new_card + '\n\n' + html[insert_pos:]
+    html = html[:first_pos] + new_card + '\n\n' + html[first_pos:]
 
     with open(COLLECTIONS, 'w', encoding='utf-8') as f:
+        f.write(html)
+    return True
+
+
+INDEX_HTML = ROOT / 'index.html'
+FEATURED_SLIDE_ANCHOR = 'id="Slide-template--25452181061879__featured-collection-1"'
+
+
+def update_homepage(slug, short_title, title, sale_price, orig_price, img_filenames):
+    """Insert a new slide at the front of the featured-collection slider on index.html."""
+    if not INDEX_HTML.exists():
+        warn('index.html not found — skipping homepage update.')
+        return False
+
+    with open(INDEX_HTML, encoding='utf-8') as f:
+        html = f.read()
+
+    if FEATURED_SLIDE_ANCHOR not in html:
+        warn('Featured collection slider not found in index.html — skipping.')
+        return False
+
+    img1 = img_filenames[0]
+    img2 = img_filenames[1] if len(img_filenames) > 1 else img_filenames[0]
+
+    has_sale = (sale_price != orig_price)
+    if has_sale:
+        price_html = f'''<div class="price  price--on-sale">
+              <div class="price__container">
+                <div class="price__regular">
+                  <span class="visually-hidden visually-hidden--inline">Regular price</span>
+                  <span class="price-item price-item--regular">Rs. {sale_price} INR</span>
+                </div>
+                <div class="price__sale">
+                  <span class="visually-hidden visually-hidden--inline">Regular price</span>
+                  <span><s class="price-item price-item--regular">Rs. {orig_price} INR</s></span>
+                  <span class="visually-hidden visually-hidden--inline">Sale price</span>
+                  <span class="price-item price-item--sale price-item--last">Rs. {sale_price} INR</span>
+                </div>
+              </div>
+            </div>'''
+    else:
+        price_html = f'''<div class="price">
+              <div class="price__container">
+                <div class="price__regular">
+                  <span class="visually-hidden visually-hidden--inline">Regular price</span>
+                  <span class="price-item price-item--regular">Rs. {sale_price} INR</span>
+                </div>
+              </div>
+            </div>'''
+
+    new_slide = f'''          <li
+            id="Slide-template--25452181061879__featured-collection-0"
+            class="grid__item scroll-trigger animate--slide-in"
+              data-cascade
+              style="--animation-order: 0;"
+          >
+<div class="card-wrapper product-card-wrapper underline-links-hover">
+    <div
+      class="card card--card card--media color-scheme-1 gradient"
+      style="--ratio-percent: 100%;"
+    >
+      <div class="card__inner  ratio" style="--ratio-percent: 100%;">
+        <div class="card__media">
+          <div class="media media--transparent media--hover-effect">
+            <img
+              srcset="cdn/shop/files/{img1}"
+              src="cdn/shop/files/{img1}"
+              sizes="(min-width: 1200px) 267px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+              alt="{short_title}"
+              class="motion-reduce"
+              loading="lazy"
+              width="1254"
+              height="1254"
+            >
+            <img
+              srcset="cdn/shop/files/{img2}"
+              src="cdn/shop/files/{img2}"
+              sizes="(min-width: 1200px) 267px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
+              alt=""
+              class="motion-reduce"
+              loading="lazy"
+              width="1254"
+              height="1254"
+            >
+          </div>
+        </div>
+        <div class="card__content">
+          <div class="card__information">
+            <h3 class="card__heading">
+              <a href="products/{slug}.html" class="full-unstyled-link">{title}</a>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="card__content">
+        <div class="card__information">
+          <h3 class="card__heading h5">
+            <a href="products/{slug}.html" class="full-unstyled-link">{short_title}</a>
+          </h3>
+          <div class="card-information">
+            <span class="visually-hidden">Vendor:</span>
+            <div class="caption-with-letter-spacing light">AL-SAALIM PERFUMES</div>
+            <span class="caption-large light"></span>
+            {price_html}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+          </li>
+'''
+
+    # Insert before the <li that wraps slide-1
+    insert_before = html.rfind('<li\n', 0, html.index(FEATURED_SLIDE_ANCHOR))
+    html = html[:insert_before] + new_slide + html[insert_before:]
+
+    with open(INDEX_HTML, 'w', encoding='utf-8') as f:
         f.write(html)
     return True
 
@@ -485,14 +590,16 @@ def main():
     product_file.write_text(product_html, encoding='utf-8')
     ok(f'Created: products/{slug}.html')
 
-    # ── Step 6: Update collections & search ──────────────────────────────
-    step(6, TOTAL_STEPS, 'Updating Collections & Search')
+    # ── Step 6: Update collections, search & homepage ────────────────────
+    step(6, TOTAL_STEPS, 'Updating Collections, Search & Homepage')
     hr()
 
     if update_collections(slug, full_title, short_title, sale_price, orig_price, main_img):
-        ok('Added product card to collections/all.html')
+        ok('Added product card at TOP of collections/all.html')
     if update_search(slug, short_title, sale_price, main_img):
         ok('Added to search index in search.html')
+    if update_homepage(slug, short_title, full_title, sale_price, orig_price, cdn_filenames):
+        ok('Added as first slide on index.html homepage')
 
     # ── Done ──────────────────────────────────────────────────────────────
     print()
@@ -501,8 +608,9 @@ def main():
     print(c(BOLD + GREEN, '  ╚══════════════════════════════════════════════╝'))
     print()
     print(c(CYAN, f'  Product page :  products/{slug}.html'))
-    print(c(CYAN, f'  Collections  :  collections/all.html  (updated)'))
+    print(c(CYAN, f'  Collections  :  collections/all.html  (first position)'))
     print(c(CYAN, f'  Search       :  search.html           (updated)'))
+    print(c(CYAN, f'  Homepage     :  index.html            (first slide)'))
     print()
     print(c(DIM, '  Tip: git add . && git commit -m "Add product: ' + short_title + '"'))
     print()
