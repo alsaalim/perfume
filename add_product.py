@@ -168,28 +168,31 @@ def make_product_html(slug, title, short_title, sale_price, orig_price,
     html = html.replace(TPL_SHORT_TITLE, short_title)
 
     # ── 3. Replace image filename(s) ─────────────────────────────────────
-    # Replace the primary template image UUID with our new image
-    html = html.replace(TPL_IMG_BASE, main_img_base)
-
-    # The secondary template image (if any) → same new image (single-image product)
-    html = html.replace(TPL_IMG2_BASE, main_img_base)
+    # Build mapping: template slot → our image (fall back to main if only 1 image given)
+    img_map = {
+        TPL_IMG_BASE:  img_filenames[0],
+        TPL_IMG2_BASE: img_filenames[1] if len(img_filenames) > 1 else img_filenames[0],
+    }
+    for tpl_base, new_img in img_map.items():
+        html = html.replace(tpl_base, new_img)
 
     # After UUID substitution, the src/srcset still reference _width_NNN and
-    # _v_NNNN variants that don't exist for our locally-copied file.
-    # Strip those suffixes so every reference resolves to the one file we have.
-    esc = re.escape(main_img_base)
-    # Fix src="...UUID_v_extra_width_NNN" → src="...UUID"
-    html = re.sub(
-        r'(src="../cdn/shop/files/)' + esc + r'(?:_v_\d+)*(?:_width_\d+)?(")',
-        r'\g<1>' + main_img_base + r'\2',
-        html,
-    )
-    # Collapse srcset to just our one file (no width variants to offer)
-    html = re.sub(
-        r'(srcset=")[^"]*' + esc + r'[^"]*(")',
-        r'\g<1>' + f'../cdn/shop/files/{main_img_base}' + r'\2',
-        html,
-    )
+    # _v_NNNN variants that don't exist for our locally-copied files.
+    # Strip those suffixes so every reference resolves to the files we have.
+    for new_img in set(img_map.values()):
+        esc = re.escape(new_img)
+        # Fix src="...UUID_v_extra_width_NNN" → src="...UUID"
+        html = re.sub(
+            r'(src="../cdn/shop/files/)' + esc + r'(?:_v_\d+)*(?:_width_\d+)?(")',
+            r'\g<1>' + new_img + r'\2',
+            html,
+        )
+        # Collapse srcset to just our file (no width variants to offer)
+        html = re.sub(
+            r'(srcset=")[^"]*' + esc + r'[^"]*(")',
+            r'\g<1>' + f'../cdn/shop/files/{new_img}' + r'\2',
+            html,
+        )
 
     # ── 4. Replace prices ─────────────────────────────────────────────────
     # Sale price spans (class contains price-item--sale)
