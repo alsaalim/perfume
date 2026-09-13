@@ -1,5 +1,5 @@
 (function () {
-  const WHATSAPP_NUMBER = '919528394331';
+  const WHATSAPP_NUMBER = '919368424073';
   const CART_KEY = 'alsaalim_cart';
 
   /* ── Cart Data Helpers ─────────────────────────────────────────────── */
